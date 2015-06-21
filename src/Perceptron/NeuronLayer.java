@@ -1,7 +1,6 @@
 package Perceptron;
 
 
-import DataSet.DataPoint;
 import java.util.ArrayList;
 import java.util.Iterator;
 

@@ -23,22 +23,34 @@ public class Perceptron {
     private double startingLeringRate = 1.0;
     private double AGEING_FACTOR = 0.99;
     
+    /**
+     * 
+     * @param numOutputs
+     * @param exampleData 
+     */
     public Perceptron(int numOutputs, DataPoint exampleData) {
+        // set up the input reference, used to determine the correct nueron for each attribute
         inputReference = new HashMap<String, Integer>();
         layers = new ArrayList<NeuronLayer>();
         
         // build the input layer
         NeuronLayer inputLayer = new NeuronLayer();
-        Iterator<String> iter = exampleData.getAttributeKeys().iterator();
+        Iterator<String> iter = exampleData.getAttributes().keySet().iterator();
         int inputIndex = 0;
         while(iter.hasNext()) {
             String key = iter.next();
             Neuron n = new Neuron();
-            inputReference.put(key, inputIndex);
+            inputReference.put(new String(key), inputIndex);
             inputIndex++;
             inputLayer.add(n);
         }
         int numInputs = inputLayer.size();
+// REMOVE LATER        
+        if(numInputs != inputIndex+1) {
+            System.err.println("numInput != inputIndex+1");
+            System.exit(2);
+        }
+            
         int numMiddle = (numInputs+numOutputs)/2;
         
         System.out.println("numIn: " + numInputs + " numMid: " + numMiddle + " numOut: " + numOutputs);
@@ -60,7 +72,7 @@ public class Perceptron {
      */
     public void input(DataPoint point) {
         
-        Iterator<String> iter = point.getAttributeKeys().iterator();
+        Iterator<String> iter = point.getAttributes().keySet().iterator();
         while(iter.hasNext()) {
             String inputKey = iter.next();
             // get the reference to the assigned neuron
@@ -70,7 +82,7 @@ public class Perceptron {
                 System.exit(1);
             }
             try{
-                Double inputValue = Double.parseDouble(point.get(inputKey));
+                Double inputValue = point.getAttributes().get(inputKey);
                 // set the correct neurons output from the input layer
                 layers.get(0).get(neuronIndex).setOuput(inputValue);
             } catch(Exception e) {

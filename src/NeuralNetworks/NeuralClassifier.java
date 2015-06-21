@@ -24,11 +24,11 @@ public class NeuralClassifier {
     public static void main(String[] args) {
         DataSet set;
         try {
-            set = new DataSet("irisdata.csv");
+            set = new DataSet("irisdata.csv", -1);
             DataSet trainingSet = set.cleanPercent(70.0);
             //DataSet trainingSet = set.removePercent(70);
             NeuralClassifier classy = new NeuralClassifier(trainingSet);
-            classy.classify(set.getOne());
+            //classy.classify(set.getOne());
         } catch (IOException ex) {
             Logger.getLogger(NeuralClassifier.class.getName()).log(Level.SEVERE, null, ex);
             System.exit(3);
@@ -78,14 +78,12 @@ public class NeuralClassifier {
      * @param trainingData 
      */
     private void train(DataSet trainingData) {
-        if(false)
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         
         Iterator<DataPoint> iter = trainingData.iterator();
         while(iter.hasNext()) {
             DataPoint p = iter.next();
             String output = this.classify(p);
-            System.out.println(p.getTarget() + " : " + output);
+            System.out.println((String)p.getTarget() + " : " + output);
         }
     }
 }

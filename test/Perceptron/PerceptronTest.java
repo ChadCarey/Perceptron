@@ -40,6 +40,7 @@ public class PerceptronTest {
         exampleData = new DataPoint();
         for(int i = 1; i <= 3; ++i)
             exampleData.put("test_"+i, i+Math.random());
+        exampleData.setTarget("target", "value");
     }
     
     @After
