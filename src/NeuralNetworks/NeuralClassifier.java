@@ -28,15 +28,19 @@ public class NeuralClassifier {
             DataSet trainingSet = set.cleanPercent(70.0);
             //DataSet trainingSet = set.removePercent(70);
             NeuralClassifier classy = new NeuralClassifier(trainingSet);
-            //classy.classify(set.getOne());
         } catch (IOException ex) {
             Logger.getLogger(NeuralClassifier.class.getName()).log(Level.SEVERE, null, ex);
+            System.exit(3);
+        } catch (NumberFormatException ex) {
+            Logger.getLogger(NeuralClassifier.class.getName()).log(Level.SEVERE, null, ex);
+            System.err.println("DataSet only allows numeric attributes");
             System.exit(3);
         }
     }
     
     
     Perceptron perceptron;
+    // target Values indicates the meaning of each neuron from the output layer
     ArrayList<String> targetValues;
     
     public NeuralClassifier(DataSet trainingData) {
@@ -59,9 +63,12 @@ public class NeuralClassifier {
      * @return 
      */
     public String classify(DataPoint dataPoint) {
+        // run the perceptron
         perceptron.input(dataPoint);
+        // get the outputs
         List<Double> outputs = perceptron.getOutput();
         
+        // find the maximum output
         int maxIndex = 0;
         Double maxClass = Double.MIN_VALUE;
         for(int i = 0; i < outputs.size(); ++i) {
@@ -70,6 +77,8 @@ public class NeuralClassifier {
                 maxIndex = i;
             }
         }
+        // return the maximum output string
+        // target Values indicates the meaning of each neuron from the output layer
         return targetValues.get(maxIndex);
     }
 
@@ -82,8 +91,24 @@ public class NeuralClassifier {
         Iterator<DataPoint> iter = trainingData.iterator();
         while(iter.hasNext()) {
             DataPoint p = iter.next();
-            String output = this.classify(p);
-            System.out.println((String)p.getTarget() + " : " + output);
+            // input the dataPoint
+            this.perceptron.input(p);
+            
+            // generate the correct outputs using the targetValues
+            // target Values indicates the meaning of each neuron from the output layer
+            List<Double> correctValues = new ArrayList<Double>();
+            for(int i = 0; i < targetValues.size(); ++i) {
+                if(!targetValues.get(i).equals(p.getTarget())) {
+                    correctValues.add(0.0);
+                } else {
+                    correctValues.add(1.0);
+                }
+            }
+            System.out.println();
+            System.out.println(this.getClass().getName() + " : " + p.getTarget());
+            System.out.println(this.getClass().getName() + " : " + targetValues);
+            System.out.println(this.getClass().getName() + " : " + correctValues);
+            this.perceptron.learn(correctValues);
         }
     }
 }

@@ -67,6 +67,7 @@ public class PerceptronTest {
         List<Double> output = p.getOutput();
         Assert.assertTrue(output != null);
         Assert.assertTrue(output.size() == numOutputs);
+        System.out.println(output);
     }
     
 }

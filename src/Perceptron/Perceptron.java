@@ -5,6 +5,7 @@ import DataSet.DataPoint;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -46,8 +47,9 @@ public class Perceptron {
         }
         int numInputs = inputLayer.size();
 // REMOVE LATER        
-        if(numInputs != inputIndex+1) {
-            System.err.println("numInput != inputIndex+1");
+        if(numInputs != inputIndex) {
+            System.err.println(this.getClass().getName() + "::numInput != inputIndex+1");
+            System.err.println(numInputs + " : " + inputIndex);
             System.exit(2);
         }
             
@@ -127,11 +129,15 @@ public class Perceptron {
             NeuronLayer outputLayer = this.layers.get(index);
             
             for(int i = 0; i < outputLayer.size(); ++i) {
-                System.out.println("outputLayerSize: " + outputLayer.size());
-                System.out.println("currentIndex: " + i);
                 outputData.add(outputLayer.get(index).getOuput());
             }
         }
         return outputData;
+    }
+
+    public void learn(List<Double> correctValues) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        // generate the error of the output layer
+        // itterate backwards through the neuron layers passing each layer backwards
     }
 }
