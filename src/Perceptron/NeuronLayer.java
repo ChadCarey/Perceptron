@@ -3,6 +3,7 @@ package Perceptron;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -22,6 +23,7 @@ class NeuronLayer extends ArrayList<Neuron> {
     }
 
     NeuronLayer(int numNeurons) {
+        super();
         for(int i = 0; i < numNeurons; ++i)
             this.add(new Neuron());
     }
@@ -34,7 +36,14 @@ class NeuronLayer extends ArrayList<Neuron> {
         Iterator<Neuron> iter = this.iterator();
         while(iter.hasNext()) {
             Neuron neuron = iter.next();
-            neuron.input(layer);
+            neuron.input(layer, biasNeuron);
+        }
+    }
+
+    void generateError(List<Double> correctValues) {
+           // loop through the neurons
+        for(int i = 0; i < this.size() && i < correctValues.size(); ++i) {
+            this.get(i).calculateError(correctValues.get(i));
         }
     }
     

@@ -3,6 +3,7 @@ package Perceptron;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Random;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -18,6 +19,7 @@ class Neuron extends HashMap<Neuron, Double> {
     
     private double output;
     private double regression;
+    private double error;
     
     // note: a neuron is a node that knows it's output weights
     
@@ -26,6 +28,7 @@ class Neuron extends HashMap<Neuron, Double> {
      */
     Neuron() {
         super();
+        System.out.println("HashCode: " + this.hashCode());
     }
     
     /**
@@ -33,8 +36,7 @@ class Neuron extends HashMap<Neuron, Double> {
      * @param input
      * @return 
      */
-    double input(NeuronLayer input) {
-        BiasNeuron bias = input.getBias();
+    double input(NeuronLayer input, BiasNeuron bias) {
        
         // add the bias to the weighted sum
         double sum = bias.getOuput() * bias.get(this);
@@ -50,7 +52,9 @@ class Neuron extends HashMap<Neuron, Double> {
         
         
         this.regression = sum;
+        System.out.println(this.hashCode() + " regression: " + regression);
         this.output = calculateOutput(sum);
+        System.out.println("output: " + this.output + "\n");
         
         return this.getOuput();
     }
@@ -60,9 +64,9 @@ class Neuron extends HashMap<Neuron, Double> {
      * @param sum
      * @return 
      */
-    private double calculateOutput(double sum) {
+    private double calculateOutput(double h) {
         double e = Math.E;
-        double out = 1.0/(1+Math.pow(e, -sum));
+        double out = 1.0/(1+Math.pow(e, -h));
         return out;
     }
     
@@ -71,6 +75,10 @@ class Neuron extends HashMap<Neuron, Double> {
      */
     void calculateError() {
         
+    }
+    
+    void calculateError(Double correctValue) {
+        this.error = this.getOuput() * (1-this.getOuput())*(this.getOuput()-correctValue);
     }
     
     /**
@@ -99,10 +107,13 @@ class Neuron extends HashMap<Neuron, Double> {
      */
     double addConnection(Neuron connection) {
         // start weight at a small possitive or negative value between ~0.1 and ~0.4;
-        double newWeight = Math.random();
+        System.out.println("Adding new connection");
+        Random randGenerator = new Random(System.nanoTime());
+        double newWeight = randGenerator.nextDouble() + 0.1;
         if(newWeight > 0.5)
             newWeight -= 1.0;
         this.put(connection, newWeight);
+        System.out.println("New Weight: " + newWeight + "\n");
         return newWeight;
     }
     

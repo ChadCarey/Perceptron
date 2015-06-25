@@ -10,6 +10,7 @@ import DataSet.DataSet;
 import Perceptron.Perceptron;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -17,7 +18,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
+ * Uses the perceptron to classify data. Attaches meaning to the perceptron outputs
  * @author chad
  */
 public class NeuralClassifier {
@@ -28,6 +29,7 @@ public class NeuralClassifier {
             DataSet trainingSet = set.cleanPercent(70.0);
             //DataSet trainingSet = set.removePercent(70);
             NeuralClassifier classy = new NeuralClassifier(trainingSet);
+            double accuracy = classy.evaluate(set);
         } catch (IOException ex) {
             Logger.getLogger(NeuralClassifier.class.getName()).log(Level.SEVERE, null, ex);
             System.exit(3);
@@ -59,14 +61,12 @@ public class NeuralClassifier {
 
     /**
      * returns the classified class
-     * @param dataPoint
+     * @param attributes
      * @return 
      */
-    public String classify(DataPoint dataPoint) {
+    public String classify(HashMap<String,Double> attributes) {
         // run the perceptron
-        perceptron.input(dataPoint);
-        // get the outputs
-        List<Double> outputs = perceptron.getOutput();
+        List<Double> outputs = perceptron.input(attributes);
         
         // find the maximum output
         int maxIndex = 0;
@@ -91,8 +91,6 @@ public class NeuralClassifier {
         Iterator<DataPoint> iter = trainingData.iterator();
         while(iter.hasNext()) {
             DataPoint p = iter.next();
-            // input the dataPoint
-            this.perceptron.input(p);
             
             // generate the correct outputs using the targetValues
             // target Values indicates the meaning of each neuron from the output layer
@@ -108,7 +106,14 @@ public class NeuralClassifier {
             System.out.println(this.getClass().getName() + " : " + p.getTarget());
             System.out.println(this.getClass().getName() + " : " + targetValues);
             System.out.println(this.getClass().getName() + " : " + correctValues);
-            this.perceptron.learn(correctValues);
+            
+            this.perceptron.learn(p.getAttributes(), correctValues);
         }
+    }
+
+    private double evaluate(DataSet set) {
+        if(false)
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return 0.0;
     }
 }

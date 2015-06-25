@@ -25,7 +25,9 @@ public class Perceptron {
     private double AGEING_FACTOR = 0.99;
     
     /**
-     * 
+     * ToDo: get DataPoint out of the perceptron. 
+     *      Make the class buildable using a list of integers and and list of input names
+     *          also we could make it so the inputs can be created dynamically when it is not found
      * @param numOutputs
      * @param exampleData 
      */
@@ -70,11 +72,11 @@ public class Perceptron {
     
     /**
      * converts the DataPoint into a neuronLayer and starts the network
-     * @param point 
+     * @param attributes 
      */
-    public void input(DataPoint point) {
+    public ArrayList<Double> input(HashMap<String,Double> attributes) {
         
-        Iterator<String> iter = point.getAttributes().keySet().iterator();
+        Iterator<String> iter = attributes.keySet().iterator();
         while(iter.hasNext()) {
             String inputKey = iter.next();
             // get the reference to the assigned neuron
@@ -84,7 +86,7 @@ public class Perceptron {
                 System.exit(1);
             }
             try{
-                Double inputValue = point.getAttributes().get(inputKey);
+                Double inputValue = attributes.get(inputKey);
                 // set the correct neurons output from the input layer
                 layers.get(0).get(neuronIndex).setOuput(inputValue);
             } catch(Exception e) {
@@ -94,6 +96,7 @@ public class Perceptron {
             }
         }
         run();
+        return this.getOutput();
     }
     
     /**
@@ -136,8 +139,23 @@ public class Perceptron {
     }
 
     public void learn(List<Double> correctValues) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        this.getOutputLayer().generateError(correctValues);
         // generate the error of the output layer
         // itterate backwards through the neuron layers passing each layer backwards
     }
+
+    public void learn(HashMap<String,Double> attributes, List<Double> correctValues) {
+        this.input(attributes);
+        this.learn(correctValues);
+    }
+    
+    private NeuronLayer getOutputLayer() {
+        int index = this.layers.size()-1;
+        if(index >= 0) {
+            return this.layers.get(index);
+        } else {
+            return null;
+        }
+    }
+
 }

@@ -63,8 +63,7 @@ public class PerceptronTest {
     public void testInput() {
         int numOutputs = 3;
         Perceptron p = new Perceptron(numOutputs, exampleData);
-        p.input(exampleData);
-        List<Double> output = p.getOutput();
+        List<Double> output = p.input(exampleData.getAttributes());
         Assert.assertTrue(output != null);
         Assert.assertTrue(output.size() == numOutputs);
         System.out.println(output);
