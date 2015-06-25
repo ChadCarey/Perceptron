@@ -31,6 +31,17 @@ class Neuron extends HashMap<Neuron, Double> {
         System.out.println("HashCode: " + this.hashCode());
     }
     
+
+    @Override
+    public int hashCode() {
+        return System.identityHashCode(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return this.hashCode() == o.hashCode();
+    }
+    
     /**
      * 
      * @param input
