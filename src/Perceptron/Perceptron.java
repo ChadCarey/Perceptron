@@ -59,8 +59,8 @@ public class Perceptron {
         
         // add/build the rest of the NeuronLayers, default is 3 layers
         layers.add(inputLayer);
-        layers.add(new NeuronLayer(numInputs));
-        //layers.add(new NeuronLayer(numMiddle));
+        //layers.add(new NeuronLayer(numInputs));
+        layers.add(new NeuronLayer(numMiddle));
         layers.add(new NeuronLayer(numOutputs));
         if(layers.size() < 3) {
             System.err.println("Error creating perceptron, not enough layers");
