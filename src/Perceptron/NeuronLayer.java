@@ -36,15 +36,30 @@ class NeuronLayer extends ArrayList<Neuron> {
         Iterator<Neuron> iter = this.iterator();
         while(iter.hasNext()) {
             Neuron neuron = iter.next();
-            neuron.input(layer, biasNeuron);
+            neuron.input(layer, this.getBias());
         }
     }
 
     void generateError(List<Double> correctValues) {
            // loop through the neurons
         for(int i = 0; i < this.size() && i < correctValues.size(); ++i) {
-            this.get(i).calculateError(correctValues.get(i));
+            this.get(i).calculateOutputError(correctValues.get(i));
         }
+    }
+
+    void learn(NeuronLayer connectedLayer, double currentLearningRate) {
+        
+        // itterate throught each neuron, passing each the connected layer and the currentLearningRate
+        Iterator<Neuron> iter = this.iterator();
+        while(iter.hasNext()) {
+            Neuron n = iter.next();
+            n.learn(connectedLayer, currentLearningRate);
+        }
+    }
+    
+    void updateBias(double currentLearningRate) {
+        // update the bias inputing to this layer
+        this.getBias().learn(this, currentLearningRate);
     }
     
 }

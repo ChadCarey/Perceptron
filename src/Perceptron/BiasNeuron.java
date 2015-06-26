@@ -17,7 +17,7 @@ class BiasNeuron extends Neuron {
      * @return 
      */
     @Override
-    double getOuput() {
+    public double getOuput() {
         return 1.0;
     }
     

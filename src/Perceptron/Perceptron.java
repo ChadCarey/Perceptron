@@ -20,9 +20,7 @@ import java.util.List;
 public class Perceptron {
     private HashMap<String, Integer> inputReference;
     private ArrayList<NeuronLayer> layers;
-    private double endLearningRate = 0.1;
-    private double startingLeringRate = 1.0;
-    private double AGEING_FACTOR = 0.99;
+    private double learningRate = 0.4;
     
     /**
      * ToDo: get DataPoint out of the perceptron. 
@@ -61,7 +59,8 @@ public class Perceptron {
         
         // add/build the rest of the NeuronLayers, default is 3 layers
         layers.add(inputLayer);
-        layers.add(new NeuronLayer(numMiddle));
+        layers.add(new NeuronLayer(numInputs));
+        //layers.add(new NeuronLayer(numMiddle));
         layers.add(new NeuronLayer(numOutputs));
         if(layers.size() < 3) {
             System.err.println("Error creating perceptron, not enough layers");
@@ -76,6 +75,8 @@ public class Perceptron {
      */
     public ArrayList<Double> input(HashMap<String,Double> attributes) {
         
+        // set the first layer's "outputs" to the correct inputs
+        // these outputs will be passed through the neuron connections before going to the next layer
         Iterator<String> iter = attributes.keySet().iterator();
         while(iter.hasNext()) {
             String inputKey = iter.next();
@@ -95,7 +96,9 @@ public class Perceptron {
                 System.exit(2);
             }
         }
+        // start passing the information through the network
         run();
+        //System.out.println("outputs: " + this.getOutput());
         return this.getOutput();
     }
     
@@ -127,21 +130,27 @@ public class Perceptron {
      */
     public ArrayList<Double> getOutput() {
         ArrayList<Double> outputData = new ArrayList();
-        int index = this.layers.size()-1;
-        if(index >= 0) {
-            NeuronLayer outputLayer = this.layers.get(index);
+        NeuronLayer outputLayer = this.getOutputLayer();
             
-            for(int i = 0; i < outputLayer.size(); ++i) {
-                outputData.add(outputLayer.get(index).getOuput());
-            }
+        for(int i = 0; i < outputLayer.size(); ++i) {
+            outputData.add(outputLayer.get(i).getOuput());
         }
+        
         return outputData;
     }
 
     public void learn(List<Double> correctValues) {
-        this.getOutputLayer().generateError(correctValues);
-        // generate the error of the output layer
-        // itterate backwards through the neuron layers passing each layer backwards
+        // get the output layer and set the output error
+        NeuronLayer last = this.getOutputLayer();
+        last.generateError(correctValues);
+        
+        for(int i = this.layers.size()-2; i >= 0; --i) {
+            NeuronLayer layer = this.layers.get(i);
+            layer.learn(last, this.learningRate);
+            layer.updateBias(learningRate);
+            // set the layer to the last layer
+            last = layer;
+        }
     }
 
     public void learn(HashMap<String,Double> attributes, List<Double> correctValues) {
@@ -157,5 +166,12 @@ public class Perceptron {
             return null;
         }
     }
+    
+    public void setLearningRate(double rate) {
+        this.learningRate = rate;
+    }
 
+    public double getLearningRate() {
+        return this.learningRate;
+    }
 }

@@ -30,6 +30,7 @@ public class NeuralClassifier {
             //DataSet trainingSet = set.removePercent(70);
             NeuralClassifier classy = new NeuralClassifier(trainingSet);
             double accuracy = classy.evaluate(set);
+            System.out.println("accuracy: " + accuracy);
         } catch (IOException ex) {
             Logger.getLogger(NeuralClassifier.class.getName()).log(Level.SEVERE, null, ex);
             System.exit(3);
@@ -47,6 +48,9 @@ public class NeuralClassifier {
     
     public NeuralClassifier(DataSet trainingData) {
         targetValues = new ArrayList<String>();
+        
+        // load and assign targets to each neuron on the output layer,
+        // integers indicate the index of the neuron
         Set<String> targetSet = trainingData.getTargetValues();
         Iterator<String> iter = targetSet.iterator();
         while(iter.hasNext()) {
@@ -71,6 +75,7 @@ public class NeuralClassifier {
         // find the maximum output
         int maxIndex = 0;
         Double maxClass = Double.MIN_VALUE;
+        System.out.println("Outputs: " + outputs);
         for(int i = 0; i < outputs.size(); ++i) {
             if(outputs.get(i) > maxClass) {
                 maxClass = outputs.get(i);
@@ -87,33 +92,49 @@ public class NeuralClassifier {
      * @param trainingData 
      */
     private void train(DataSet trainingData) {
+        long count = 0;
+        double minLearningRate = 0.1;
+        double agingRate = 0.999;
         
-        Iterator<DataPoint> iter = trainingData.iterator();
-        while(iter.hasNext()) {
-            DataPoint p = iter.next();
-            
-            // generate the correct outputs using the targetValues
-            // target Values indicates the meaning of each neuron from the output layer
-            List<Double> correctValues = new ArrayList<Double>();
-            for(int i = 0; i < targetValues.size(); ++i) {
-                if(!targetValues.get(i).equals(p.getTarget())) {
-                    correctValues.add(0.0);
-                } else {
-                    correctValues.add(1.0);
+        while(this.perceptron.getLearningRate() > minLearningRate) {
+            //trainingData.randomize();
+            count++;
+            Iterator<DataPoint> iter = trainingData.iterator();
+            while(iter.hasNext()) {
+                DataPoint p = iter.next();
+
+                // generate the correct outputs using the targetValues
+                // target Values indicates the meaning of each neuron from the output layer
+                List<Double> correctValues = new ArrayList<Double>();
+                for(int i = 0; i < targetValues.size(); ++i) {
+                    if(!targetValues.get(i).equals(p.getTarget())) {
+                        correctValues.add(0.0);
+                    } else {
+                        correctValues.add(1.0);
+                    }
                 }
+
+                this.perceptron.learn(p.getAttributes(), correctValues);
             }
-            System.out.println();
-            System.out.println(this.getClass().getName() + " : " + p.getTarget());
-            System.out.println(this.getClass().getName() + " : " + targetValues);
-            System.out.println(this.getClass().getName() + " : " + correctValues);
-            
-            this.perceptron.learn(p.getAttributes(), correctValues);
+            // age the perceptron learning rate
+            this.perceptron.setLearningRate(this.perceptron.getLearningRate()*agingRate);
         }
+        System.out.println("Number itterations: " + count);
     }
 
     private double evaluate(DataSet set) {
-        if(false)
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        return 0.0;
+        double correct = 0;
+        
+        Iterator<DataPoint> iter = set.iterator();
+        while(iter.hasNext()) {
+            DataPoint p = iter.next();
+            System.out.println("attributes: " + p.getAttributes());
+            String output = this.classify(p.getAttributes());
+            System.out.println("output:" + output + " correct: " + p.getTarget());
+            if(output.equals(p.getTarget()))
+                correct++;
+        }
+        
+        return correct/set.size();
     }
 }
